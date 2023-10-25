@@ -50,8 +50,7 @@ void print(struct node *head)
               {
                      printf("Node Adress : %p", head);        // eğer liste boş değil ise düğüm adresini yazdırıyorum.
                      printf("Node Value : %d\n", head->data); // ve her bir liste elemanının değerini yazdırıyorum.
-                     head = head->next;
-                     sleep(1); // döngüyü ilerletmek için her defasında bir sonraki düğüme geçiyorum.
+                     head = head->next;                       // döngüyü ilerletmek için her defasında bir sonraki düğüme geçiyorum.
               }
        }
 }
@@ -80,37 +79,67 @@ struct node *deletenode(struct node *head, int key)
 {
        if (head == NULL)
        {
-              printf("Liste bos"); //eğer liste boş ise liste boş diye yazdırıyorum.
+              printf("Liste bos"); // eğer liste boş ise liste boş diye yazdırıyorum.
               return head;
        }
        else
        {
-              struct node *temp = head;   //listenin başını temp de tutuyorum
-              if (head->data == key) // eğer silinecek eleman ilk eleman ise onu direk siliyorum
+              struct node *temp = head; // listenin başını temp de tutuyorum
+              if (head->data == key)    // eğer silinecek eleman ilk eleman ise onu direk siliyorum
               {
                      head = temp->next;
                      free(temp);
                      return head;
               }
-              else   // eğer silinecek eleman ilk eleman değil ise onu liste içerisinde arıyıp siliyorum.
+              else // eğer silinecek eleman ilk eleman değil ise onu liste içerisinde arıyıp siliyorum.
               {
                      while (temp->next != NULL && temp->next->data != key) // aramak için kullandığım temp in next değeri null değil ve temp in next inin datası aramak
-                     {                                                     // istediğim değer eşit değil ise aramaya devam ediyorum.  
-                            temp = temp->next; // her defasında temp i bir sonraki düğüme taşıyorum.
+                     {                                                     // istediğim değer eşit değil ise aramaya devam ediyorum.
+                            temp = temp->next;                             // her defasında temp i bir sonraki düğüme taşıyorum.
                      }
-                     if (temp->next == NULL)     // eğer aradığım değer listede yoksa aradığınız deger listede yok diye geri bildirim yapıyorum.
+                     if (temp->next == NULL) // eğer aradığım değer listede yoksa aradığınız deger listede yok diye geri bildirim yapıyorum.
                      {
                             printf("Aradiginiz Deger Listede Yok");
                             return head;
                      }
 
-                     struct node *del = temp->next;     // yukarda ki işlemleri geçip buraya gelirse temp artık silincek elemandan bir önceki elemanda duracak
-                     temp->next = del->next;            // artık silinecek elemandan bir öncesi ve bir sonrasını bir birine bağlıyorum.
-                     free(del);    //daha sonra silinecek elemanı siliyorum
-                     del = NULL;   //bellek te herahngi bir sorun olmasın diye sildiğim yere NULL atıyorum.
-                     return head;  // listenin başını geri dönüyorum.
+                     struct node *del = temp->next; // yukarda ki işlemleri geçip buraya gelirse temp artık silincek elemandan bir önceki elemanda duracak
+                     temp->next = del->next;        // artık silinecek elemandan bir öncesi ve bir sonrasını bir birine bağlıyorum.
+                     free(del);                     // daha sonra silinecek elemanı siliyorum
+                     del = NULL;                    // bellek te herahngi bir sorun olmasın diye sildiğim yere NULL atıyorum.
+                     return head;                   // listenin başını geri dönüyorum.
               }
        }
+}
+// tüm listeyi recursive olarak silen metodu yazalım
+struct node *deleteAllNode(struct node *head) // silinecek listeyi parametre olarak alıyorum.
+{
+       if (head == NULL) // Eğer listenin ilk terimi NULL ise yanı liste boş ise listenin başını geriye dönüyorum.
+       {
+              return head;
+       }
+       else
+       {
+              deleteAllNode(head->next); // Liste boş değil ise listenin sonuna gidebilmek için head in next ini tekrar tekrar çağırıyorum.
+              free(head);                // Listenin sonuna gelindiğinde head in next i NULL değeri üretecek ve bu sefer if in içerisine girip
+              head = NULL;               // head değerini geri döndürüyorum ve dönene bu değer listenin son elemanı olacağı için onu siliyorum.
+              return head;               // daha sonra bellek te kalıntı kalmasın diye sildiğim head değeri yerine NULL atıyorum.
+                           // bu işlem sırayla gerçekleştikçe listedeki tüm elemanları siliyorum.
+                           // En son return head içerisinde NULL değeri geriye dönüyor ve fonksiyon bitiyor.
+       }
+}
+// tümlistenin elemanlarını silmek için daha kısa olan 2. bir metot yazalım
+struct node *destroy_rec(struct node *head)      // silinecek listeyi parametre olarak alıyorum.
+{
+       if (head != NULL)    //listenin ilk elemanı eğer boş değil ise 
+       {
+              destroy_rec(head->next);    //Metoduma head in next ini gönderiyorum. Bu sayde listenin sonuna gidiyorum
+              free(head);                 //Listenin son elanına ulaştığımda geriye return NULL dönüyor ve geriye doğru işlem başlıyor.
+                                          //free komutumla geri geldikçe her bir düğümü siliyorum.
+              head = NULL;                //daha sonra bellek te kalıntı kalmasın diye sildiğim head değeri yerine NULL atıyorum.
+
+       }
+       return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -126,6 +155,7 @@ int main(int argc, char *argv[])
               printf("4-Count the list\n");
               printf("5-Print reverse\n");
               printf("6-Delete one node\n");
+              printf("7-Delete all list\n");
               printf("10-Exit\n");
               printf("Enter your choise?");
               scanf("%d", &choice);
@@ -165,6 +195,9 @@ int main(int argc, char *argv[])
                      printf("Enter the value you want to delete.");
                      scanf("%d", &data);
                      head = deletenode(head, data);
+                     break;
+              case 7:
+                     head = destroy_rec(head);
                      break;
               default:
                      break;
