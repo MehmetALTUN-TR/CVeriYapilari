@@ -107,6 +107,7 @@ void print(struct node *head)
         }
     }
 }
+// listeyi tersten yazdırmak için rekürsif bir fonksiyon yazıyorum
 void print_ters(struct node *head)
 {
     if (head == NULL)
@@ -114,6 +115,22 @@ void print_ters(struct node *head)
     print_ters(head->next); // eğer liste boş değil ise her defasında head in next ini çağırıyorum.
     // en son head in next i null olduğunda geriye dönecek ve aşağıdaki yerden devam ederek listeyi tersten yazacağız.
     printf("/%d ", head->data);
+}
+// listeyi tersten yazdırmak için rekürsif olmayan bir fonksiyon yazıyorum
+void print_ters2(struct node *head)
+{
+    struct node *last = head;
+    while (last->next != NULL)
+    {
+        last = last->next;
+    }
+    while (last->prev != NULL)
+    {
+        printf("/ %d ", last->data);
+        last = last->prev;
+        if (last->prev == NULL)
+            printf("/ %d", last->data);
+    }
 }
 int main(int argc, char const *argv[])
 {
@@ -161,7 +178,7 @@ int main(int argc, char const *argv[])
             break;
         case 5:
             printf("List written backwards = ");
-            print_ters(head);
+            print_ters2(head);
             printf("\nDo you want to continue? Press 1 for yes. Hayir icin 0 i seciniz.");
             scanf("%d", &checkpoint);
             break;
