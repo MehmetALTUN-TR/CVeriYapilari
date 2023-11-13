@@ -1,0 +1,1 @@
+Bu derste stack yani yığın veri yapısını inceledik.
